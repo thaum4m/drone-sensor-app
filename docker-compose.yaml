@@ -1,0 +1,78 @@
+version: '3'
+
+services:
+  drone-sensor-app:
+    container_name: drone-sensor-app
+    image: node:22.4.1-alpine    
+    # Install dependencies and start server.
+    command:
+      - /bin/sh
+      - -c
+      - |
+        cd /app/
+        npm install
+        npm run dev
+    restart: always
+    volumes:
+      - .:/app
+    environment:
+      VITE_SENSOR_SERVICE_BASE_URL: "http://localhost:3000"
+    # env file would be better to prevent storing dev credentials.
+    # env_file: .env
+    ports:
+      - "5173:5173"
+    depends_on:
+      - drone-sensor-postgres
+
+  drone-sensor-service:
+    container_name: drone-sensor-service
+    image: node:22.4.1-alpine    
+    # Install dependencies and start server.
+    command:
+      - /bin/sh
+      - -c
+      - |
+        cd /app/
+        npm install
+        npm run seed
+        npm run start:dev
+    restart: always
+    volumes:
+      - ./drone-sensor-service:/app
+    environment:
+      DB_HOST: drone-sensor-postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: postgres
+      # Enable Cors for dev
+      CORS_ENABLED: true
+      # Apply migrations/schema automatically.
+      # DB_MIGRATIONS: true
+      DB_SYNC: true # Not for production.
+    # env file would be better to prevent storing dev credentials.
+    # env_file: .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - drone-sensor-postgres
+
+  drone-sensor-postgres:
+    container_name: drone-sensor-postgres
+    image: postgres:16.4
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+    # env file would be better to prevent storing dev password.
+    # env_file: .env-postgres
+    ports:
+      - "5432:5432"
+
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   restart: always
+  #   env_file: .env-pgadmin
+  #   ports:
+  #     - "8081:80"
+  #   depends_on:
+  #     - postgres
