@@ -16,9 +16,9 @@ export default {
     migrations: ['dist/migrations/*.js'],
     migrationsTableName: "_migrations",
     // Used to auto-run migrations.
-    migrationsRun: configService.getOrThrow('DB_MIGRATIONS') === 'true',
+    migrationsRun: configService.get('DB_MIGRATIONS', false) === 'true',
     // DO NOT USE `synchonize: true` in prod.
-    synchronize: configService.getOrThrow('DB_SYNC') === 'true',
+    synchronize: configService.get('DB_SYNC', false) === 'true',
     logging: true,
 } as PostgresConnectionOptions;
 

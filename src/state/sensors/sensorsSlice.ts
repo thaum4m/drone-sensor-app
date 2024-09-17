@@ -1,6 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import {
   ListState,
+  Sensor,
 } from '../../types';
 import { fetchSensorsList } from "./fetchSensorsList";
 
@@ -15,13 +16,13 @@ const sensorsSlice = createSlice({
   name: "sensors",
   initialState,
   reducers: {
-    update: (state, action: Record<string, any>) => {
+    update: (state, { payload }: PayloadAction<Sensor>) => {
       state.list.forEach((sensor: Record<string, any>, i: number) => {
-        if (sensor.serialNumber === action.payload.serialNumber) {
+        if (sensor.serialNumber === payload.serialNumber) {
           // Make it explicit that the list is being updated.
-          state.list[i].status = action.status; 
+          state.list[i].status = payload.status;
         }
-      })        
+      })
     },
   },
   extraReducers: builder => {

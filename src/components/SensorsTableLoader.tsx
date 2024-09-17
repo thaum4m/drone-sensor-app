@@ -10,6 +10,7 @@ import {
 import { fetchSensorsList } from '../state/sensors/fetchSensorsList';
 import { update } from '../state/sensors/sensorsSlice';
 import CONFIG from '../config/config';
+import log from 'loglevel';
 
 export type SensorsTableLoaderProps = Omit<SensorsTableProps, 'sensors'>;
 
@@ -24,15 +25,15 @@ export const SensorsTableLoader = () => {
     dispatch(fetchSensorsList());
     
     socket.on('connect', () => {
-      console.log('SensorsTableLoader - connected!');
+      log.info('SensorsTableLoader - socket connected!');
     });
 
     socket.on('disconnect', () => {
-      console.log('SensorsTableLoader - disconnected!');
+      log.info('SensorsTableLoader - socket disconnected!');
     });
 
     socket.on('updateSensorEvent', (...args) => {
-      console.log('SensorsTableLoader - updateSensorEvent received:', args);
+      log.debug('SensorsTableLoader - socket updateSensorEvent received:', args);
       dispatch(update(args[0]));
     });
 

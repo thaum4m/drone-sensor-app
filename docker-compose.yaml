@@ -16,7 +16,8 @@ services:
     volumes:
       - .:/app
     environment:
-      VITE_SENSOR_SERVICE_BASE_URL: "http://localhost:3000"
+      VITE_SENSOR_SERVICE_BASE_URL: http://localhost:3000
+      VITE_LOG_LEVEL: debug
     # env file would be better to prevent storing dev credentials.
     # env_file: .env
     ports:
@@ -47,9 +48,12 @@ services:
       DB_NAME: postgres
       # Enable Cors for dev
       CORS_ENABLED: true
+      CORS_CLIENT_PORT: 5173
       # Apply migrations/schema automatically.
       # DB_MIGRATIONS: true
       DB_SYNC: true # Not for production.
+      # Port for API and socket server.
+      APP_PORT: 3000
     # env file would be better to prevent storing dev credentials.
     # env_file: .env
     ports:

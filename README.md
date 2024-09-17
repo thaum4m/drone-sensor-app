@@ -4,10 +4,9 @@ Drone sensor React app for displaying sensor information via a backend sensor AP
 \
 For design considerations see __Considerations__ below.
 
-## Compile and run the project
+## Run the project
 
 ```bash
-npm i
 npm start
 ```
 If start fails, ensure Docker is installed and an alias exists for docker-compose if needed.
@@ -25,11 +24,13 @@ npm run dev
 
 ## Considerations
 - Sensor API __should be separated into a dedicated repository__ for use as a service along with its own Docker file.
-- __Docker files are only setup for development__ and are not production ready.
-- __Connection to actual senses is required for production__.
+- __Docker compose files are only setup for development__ and are not production ready.
+- __Connection to actual senses would be required for production__.
 - Uses `MockSensorEventService` as no service has been implemented to connect to Drone sensors for status updates.\
-__Sensor statuses are toggled consecutively__ (each after about 10secs). 
+__Sensor statuses are toggled consecutively__ (each after approx. 5 secs for testing purposes). 
 - __Authentication is not yet implemented__ for the consumer/clients.
+- __CORS is enabled__ to allow this app running on localhost to access the backend service.\
+If there is an issue with backend communication, CORS can be disabled in the browser, although its not recommended.
 
 ## Expanding the ESLint configuration
 

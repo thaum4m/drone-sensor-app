@@ -3,11 +3,12 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Alert from '@mui/material/Alert';
+import Chip from '@mui/material/Chip';
+
 import { Sensor } from '../types';
 import {
   TableCellHead,
-  TagOn,
-  TagOff,
 } from './styles';
 
 export type SensorsTableProps = {
@@ -29,17 +30,26 @@ export const SensorsTable = ({ sensors }: SensorsTableProps) => {
         <TableBody>
             {sensors.map((sensor) => (
                 <TableRow
-                    key={sensor.name}
+                    key={sensor.id}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >                
                     <TableCell>{sensor.name}</TableCell>
                     <TableCell>{sensor.serialNumber}</TableCell>
                     <TableCell>{sensor.firmwareVer}</TableCell>
                     <TableCell>
-                      {sensor.status === 'online' ? <TagOn>Online</TagOn> : <TagOff>Offline</TagOff>}
+                      {sensor.status === 'online' ?
+                        <Chip label="Online" color="success" size="small" /> :
+                        <Chip label="Offline" color="error" size="small" />}
                     </TableCell>
                 </TableRow>
             ))}
+            {sensors.length === 0 &&
+              <TableRow>
+                <TableCell colSpan={4}>                  
+                  <Alert severity="info">No sensors found.</Alert>
+                </TableCell>
+              </TableRow>
+            }
         </TableBody>
       </Table>
     </>

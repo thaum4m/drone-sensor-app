@@ -5,36 +5,35 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { MockSensorEventsService as SensorEventsService } from './mock-sensor-events.service';
+import { SensorEventsService } from './sensor-events.service';
 
-@WebSocketGateway({
-  ...(process.env.CORS_ENABLED ? { cors: '*' } : {})
-})
+@WebSocketGateway()
 export class SensorsGateway {
   constructor(private readonly sensorEventService: SensorEventsService) {}
 
   @WebSocketServer() private server: Server;
 
-  private logger: Logger = new Logger('MessageGateway');  
+  private readonly logger: Logger = new Logger(SensorsGateway.name);  
 
-  async afterInit(server: Server) {}
+  async afterInit(server: Server) {
+    this.logger.log('SensorsGateway - afterInit() called');
+    const updateGenerator = this.sensorEventService.emitUpdates(this.server);
+    for await (let payload of updateGenerator) {
+      this.logger.debug('SensorGateway - Emitted payload:', payload);
+    }    
+  }
 
   async handleConnection(client: any) {
-    this.logger.log('SensorsGateway - Client connected:', client.id);    
-    // Toggle sensors every 10 secs to demonstrate status updates.
-    setInterval(async () => {
-      const payload = await this.sensorEventService.getNextSensorEvent();
-      this.server.emit('updateSensorEvent', payload);
-    }, 10000);    
+    this.logger.debug('SensorsGateway - Client connected:', client.id);
   }
 
   handleDisconnect(client: any) {
-    this.logger.log('SensorsGateway - Client disconnected:', client.id);
+    this.logger.debug('SensorsGateway - Client disconnected:', client.id);
   }
 
   @SubscribeMessage('updateSensorEvent')
   handleMessage(client: any, payload: string) {
-    this.logger.log('handleMessage - payload:', payload);
+    this.logger.debug('handleMessage - payload:', payload);
     return 'received';
   }
 }

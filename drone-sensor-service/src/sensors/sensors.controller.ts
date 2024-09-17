@@ -1,9 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Inject } from '@nestjs/common';
 import { SensorsService } from './sensors.service';
 
 @Controller('api/sensors')
 export class SensorsController {
-  constructor(private readonly sensorsService: SensorsService) {}
+  constructor(
+    @Inject(SensorsService)
+    private readonly sensorsService: SensorsService
+  ) {}
 
   @Get()
   findAll() {
